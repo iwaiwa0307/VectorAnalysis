@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ベクトル解析 公式集 / 類題集</title>
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg);
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary);
+        }
+        /* タブナビゲーション */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #eee;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            font-size: 1em;
+            transition: 0.3s;
+        }
+        .tab:hover { background: #ddd; }
+        .tab.active {
+            background: var(--accent);
+            color: white;
+            font-weight: bold;
+        }
+        /* カードデザイン (問題や公式のブロック) */
+        .card {
+            background: var(--card-bg);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        /* トグルボタン */
+        .toggle-btn {
+            background-color: #e7f0f7;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .toggle-btn:hover { background-color: #d6e6f5; }
+        .toggle-btn.open {
+            background-color: #fce4e4;
+            color: #d9534f;
+            border-color: #d9534f;
+        }
+        .answer {
+            margin-top: 15px;
+            padding-top: 10px;
+            background: #fdfdfd;
+        }
+        hr { border: 0; border-top: 1px dashed #ccc; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+    <h1>ベクトル解析 公式集 / 類題集</h1>
+    <h3>グループLINEに流れていたpdfを少し改造したものです(中身は変えてない)。<br>お役に立てれば幸いです((*_ _))ﾍﾟｺﾘ</h3>
+
+    <div class="tabs">
+        <button id="tab-essential" class="tab" onclick="renderTab('essential')">必須公式集</button>
+        <button id="tab-problems" class="tab" onclick="renderTab('problems')">類題集</button>
+        <button id="tab-basic" class="tab" onclick="renderTab('basic')">基本公式</button>
+    </div>
+
+    <div id="content"></div>
+
+    <script>
+        // ==========================================
+        // 1. data_essential.js の内容
+        // ==========================================
+        const essentialFormulas = [
+            {
+                category: "1.1 内積、外積、三重積", 
+                items: [
+                    { name: "内積", formula: "$$ \\boldsymbol{A} \\cdot \\boldsymbol{B} = |\\boldsymbol{A}||\\boldsymbol{B}|\\cos\\theta = A_x B_x + A_y B_y + A_z B_z $$" }, 
+                    { name: "外積", formula: "$$ \\boldsymbol{A} \\times \\boldsymbol{B} = (A_y B_z - A_z B_y)\\boldsymbol{i} + (A_z B_x - A_x B_z)\\boldsymbol{j} + (A_x B_y - A_y B_x)\\boldsymbol{k} $$" }, 
+                    { name: "スカラー三重積", formula: "$$ \\boldsymbol{A} \\cdot (\\boldsymbol{B} \\times \\boldsymbol{C}) = \\boldsymbol{B} \\cdot (\\boldsymbol{C} \\times \\boldsymbol{A}) = \\boldsymbol{C} \\cdot (\\boldsymbol{A} \\times \\boldsymbol{B}) $$" }, 
+                    { name: "BAC-CAB公式 (ベクトル三重積)", formula: "$$ \\boldsymbol{A} \\times (\\boldsymbol{B} \\times \\boldsymbol{C}) = \\boldsymbol{B}(\\boldsymbol{A} \\cdot \\boldsymbol{C}) - \\boldsymbol{C}(\\boldsymbol{A} \\cdot \\boldsymbol{B}) $$" }, 
+                    { name: "外積の二重積", formula: "$$ (\\boldsymbol{A} \\times \\boldsymbol{B}) \\cdot (\\boldsymbol{C} \\times \\boldsymbol{D}) = (\\boldsymbol{A} \\cdot \\boldsymbol{C})(\\boldsymbol{B} \\cdot \\boldsymbol{D}) - (\\boldsymbol{A} \\cdot \\boldsymbol{D})(\\boldsymbol{B} \\cdot \\boldsymbol{C}) $$" }, 
+                    { name: "ヤコビ恒等式", formula: "$$ (\\boldsymbol{A} \\times \\boldsymbol{B}) \\times \\boldsymbol{C} + (\\boldsymbol{B} \\times \\boldsymbol{C}) \\times \\boldsymbol{A} + (\\boldsymbol{C} \\times \\boldsymbol{A}) \\times \\boldsymbol{B} = \\boldsymbol{0} $$" } 
+                ]
+            },
+            {
+                category: "1.2 ナブラ演算子による r 関連量", 
+                items: [
+                    { name: "$r$ の勾配", formula: "$$ \\nabla r = \\frac{\\boldsymbol{r}}{r} $$" }, 
+                    { name: "$1/r$ の勾配", formula: "$$ \\nabla \\left(\\frac{1}{r}\\right) = -\\frac{\\boldsymbol{r}}{r^3} $$" }, 
+                    { name: "位置ベクトルの発散", formula: "$$ \\nabla \\cdot \\boldsymbol{r} = 3 $$" }, 
+                    { name: "位置ベクトルの回転", formula: "$$ \\nabla \\times \\boldsymbol{r} = \\boldsymbol{0} $$" }, 
+                    { name: "$1/r$ のラプラシアン", formula: "$$ \\nabla^2 \\left(\\frac{1}{r}\\right) = 0 \\quad (r \\neq 0) $$" }, 
+                    { name: "発散ゼロの恒等式", formula: "$$ \\nabla \\cdot \\left(\\frac{\\boldsymbol{r}}{r^3}\\right) = 0 \\quad (r \\neq 0) $$" }, 
+                    { name: "$r^n$ の勾配", formula: "$$ \\nabla r^n = n r^{n-2}\\boldsymbol{r} $$" }, 
+                    { name: "$f(r)$ の勾配", formula: "$$ \\nabla f(r) = f'(r) \\frac{\\boldsymbol{r}}{r} $$" }, 
+                    { name: "外積場の発散", formula: "$$ \\nabla \\cdot (\\boldsymbol{\\Omega} \\times \\boldsymbol{r}) = 0 \\quad (\\boldsymbol{\\Omega} \\text{ は定ベクトル}) $$" }, 
+                    { name: "外積場の回転", formula: "$$ \\nabla \\times (\\boldsymbol{\\Omega} \\times \\boldsymbol{r}) = 2\\boldsymbol{\\Omega} \\quad (\\boldsymbol{\\Omega} \\text{ は定ベクトル}) $$" } 
+                ]
+            },
+            {
+                category: "1.3 ナブラ演算子の恒等式", 
+                items: [
+                    { name: "回転の発散はゼロ", formula: "$$ \\nabla \\cdot (\\nabla \\times \\boldsymbol{A}) = 0 $$" }, 
+                    { name: "勾配の回転はゼロ", formula: "$$ \\nabla \\times (\\nabla \\phi) = \\boldsymbol{0} $$" }, 
+                    { name: "回転の回転", formula: "$$ \\nabla \\times (\\nabla \\times \\boldsymbol{A}) = \\nabla(\\nabla \\cdot \\boldsymbol{A}) - \\nabla^2\\boldsymbol{A} $$" }, 
+                    { name: "スカラー倍場の発散", formula: "$$ \\nabla \\cdot (f\\boldsymbol{A}) = f(\\nabla \\cdot \\boldsymbol{A}) + (\\nabla f) \\cdot \\boldsymbol{A} $$" }, 
+                    { name: "スカラー倍場の回転", formula: "$$ \\nabla \\times (f\\boldsymbol{A}) = f(\\nabla \\times \\boldsymbol{A}) + (\\nabla f) \\times \\boldsymbol{A} $$" }, 
+                    { name: "スカラー積の勾配", formula: "$$ \\nabla (fg) = f\\nabla g + g\\nabla f $$" } 
+                ]
+            },
+            {
+                category: "1.4 積分定理", 
+                items: [
+                    { name: "ガウスの発散定理", formula: "$$ \\iiint_V \\nabla \\cdot \\boldsymbol{F} \\, dV = \\iint_S \\boldsymbol{F} \\cdot \\boldsymbol{n} \\, dS $$" }, 
+                    { name: "ストークスの定理", formula: "$$ \\oint_C \\boldsymbol{A} \\cdot d\\boldsymbol{r} = \\iint_S (\\nabla \\times \\boldsymbol{A}) \\cdot \\boldsymbol{n} \\, dS $$" }, 
+                    { name: "グリーンの定理", formula: "$$ \\oint_C (P \\, dx + Q \\, dy) = \\iint_R \\left( \\frac{\\partial Q}{\\partial x} - \\frac{\\partial P}{\\partial y} \\right) dx \\, dy $$" } 
+                ]
+            },
+            {
+                category: "1.5 曲線座標系", 
+                items: [
+                    { name: "2次元極座標の速度と加速度", formula: "$$ \\begin{gathered} \\boldsymbol{v} = \\dot{r}\\boldsymbol{e}_r + r\\dot{\\theta}\\boldsymbol{e}_\\theta \\\\ \\boldsymbol{a} = (\\ddot{r} - r\\dot{\\theta}^2)\\boldsymbol{e}_r + (r\\ddot{\\theta} + 2\\dot{r}\\dot{\\theta})\\boldsymbol{e}_\\theta \\end{gathered} $$" },
+                    { name: "球座標のラプラシアン", formula: "$$ \\nabla^2 f = \\frac{1}{r^2}\\frac{\\partial}{\\partial r}\\left(r^2\\frac{\\partial f}{\\partial r}\\right) + \\frac{1}{r^2\\sin\\theta}\\frac{\\partial}{\\partial \\theta}\\left(\\sin\\theta\\frac{\\partial f}{\\partial \\theta}\\right) + \\frac{1}{r^2\\sin^2\\theta}\\frac{\\partial^2 f}{\\partial \\phi^2} $$" } 
+                ]
+            }
+        ];
+
+        // ==========================================
+        // 2. data_problems.js の内容
+        // ==========================================
+        const commonText = {
+            r: "位置ベクトル $$ \\boldsymbol{r} = x\\boldsymbol{i} + y\\boldsymbol{j} + z\\boldsymbol{k} $$ とその大きさ $$ r = |\\boldsymbol{r}| $$ とする。",
+            vec: "$$ \\boldsymbol{a}=(1,2,1), \\quad \\boldsymbol{b}=(2,-1,1), \\quad \\boldsymbol{c}=(-1,1,2) $$ とする。"
+        };
+
+        const problemSets = [
+            {
+                id: "1", category: "A", level: "易",
+                question: `次を求めよ。<br>$$ \\nabla r $$`,
+                answer: "$$ \\nabla r = \\frac{\\boldsymbol{r}}{r} $$<br>解説:<br>$\\nabla r$ は、スカラー場 $r = \\sqrt{x^2+y^2+z^2}$ の勾配。たとえば $x$ 成分は $\\partial r/\\partial x = x/r$。同様に $y, z$ 成分も出すと、まとめて $$ \\nabla r = \\frac{(x,y,z)}{r} = \\frac{\\boldsymbol{r}}{r} $$ となる。これは $\\boldsymbol{r}$ 方向を向く単位ベクトルである。"
+            },
+            {
+                id: "2", category: "A", level: "易",
+                question: `次を求めよ。<br>$$ \\nabla(1/r) $$`,
+                answer: "$$ -\\frac{\\boldsymbol{r}}{r^3} $$<br>解説:<br>合成関数の微分を使う。$1/r$ を $r$ の関数とみて $$ \\nabla\\left(\\frac{1}{r}\\right) = \\frac{d}{dr}\\left(\\frac{1}{r}\\right) \\nabla r = \\left(-\\frac{1}{r^2}\\right) \\frac{\\boldsymbol{r}}{r} = -\\frac{\\boldsymbol{r}}{r^3} $$"
+            },
+            {
+                id: "3", category: "A", level: "易",
+                question: `次を求めよ。<br>$$ \\nabla \\cdot \\boldsymbol{r} $$`,
+                answer: "$$ 3 $$<br>解説:<br>$$ \\nabla \\cdot \\boldsymbol{r} = \\frac{\\partial x}{\\partial x} + \\frac{\\partial y}{\\partial y} + \\frac{\\partial z}{\\partial z} = 1+1+1 = 3 $$ 位置ベクトルの発散は次元の数になる。"
+            },
+            {
+                id: "4", category: "A", level: "易",
+                question: `次を求めよ。<br>$$ \\nabla \\times \\boldsymbol{r} $$`,
+                answer: "$$ \\boldsymbol{0} \\quad \\text{(ゼロベクトル)} $$<br>解説:<br>$\\nabla \\times \\boldsymbol{r}$ の $x$ 成分は $\\partial z/\\partial y - \\partial y/\\partial z = 0$。$y, z$ 成分も同様にすべて0。位置ベクトル場は渦なし(回転ゼロ)である。"
+            },
+            {
+                id: "5", category: "A", level: "易",
+                question: `$r \\neq 0$ のとき、次を求めよ。<br>$$ \\nabla^2(1/r) $$`,
+                answer: "$$ 0 $$<br>解説:<br>$$ \\nabla^2\\left(\\frac{1}{r}\\right) = \\nabla \\cdot \\nabla\\left(\\frac{1}{r}\\right) = \\nabla \\cdot \\left(-\\frac{\\boldsymbol{r}}{r^3}\\right) $$ 次の問6で示すとおりこの発散は0。よって結果は0となり、点電荷のポテンシャルがラプラス方程式を満たすことに対応する。"
+            },
+            {
+                id: "6", category: "A", level: "易",
+                question: `$r \\neq 0$ のとき、次を求めよ。<br>$$ \\nabla \\cdot \\left(\\frac{\\boldsymbol{r}}{r^3}\\right) $$`,
+                answer: "$$ 0 $$<br>解説:<br>公式 $\\nabla \\cdot (r^n \\boldsymbol{r}) = (n+3)r^n$ を使う。$\\boldsymbol{r}/r^3 = r^{-3}\\boldsymbol{r}$ だから $n=-3$ とみて $(-3+3)r^{-3} = 0$。"
+            },
+            {
+                id: "7", category: "A", level: "易",
+                question: `次を求めよ。(ヒント: $\\nabla r^n$ の公式を使え)<br>$$ \\nabla r^2 $$`,
+                answer: "$$ 2\\boldsymbol{r} $$<br>解説:<br>$$ \\nabla r^n = n r^{n-2} \\boldsymbol{r} $$ に $n=2$ を代入すると $2r^0\\boldsymbol{r} = 2\\boldsymbol{r}$。"
+            },
+            {
+                id: "8", category: "A", level: "易",
+                question: `次を求めよ。<br>$$ \\nabla r^{-1} $$`,
+                answer: "$$ -\\frac{\\boldsymbol{r}}{r^3} $$<br>解説:<br>同じ公式に $n=-1$ を入れて $(-1)r^{-3}\\boldsymbol{r} = -\\boldsymbol{r}/r^3$。問2の $\\nabla(1/r)$ と完全に一致する。"
+            },
+            {
+                id: "9", category: "A", level: "易",
+                question: "$\\boldsymbol{\\Omega} = (\\Omega_x, \\Omega_y, \\Omega_z)$ を定ベクトルとする。次を求めよ。<br>$$ \\nabla \\cdot (\\boldsymbol{\\Omega} \\times \\boldsymbol{r}) $$",
+                answer: "$$ 0 $$<br>解説:<br>公式 $\\nabla \\cdot (\\boldsymbol{A} \\times \\boldsymbol{B}) = \\boldsymbol{B} \\cdot (\\nabla \\times \\boldsymbol{A}) - \\boldsymbol{A} \\cdot (\\nabla \\times \\boldsymbol{B})$ を用いる。$$ \\nabla \\cdot (\\boldsymbol{\\Omega} \\times \\boldsymbol{r}) = \\boldsymbol{r} \\cdot (\\nabla \\times \\boldsymbol{\\Omega}) - \\boldsymbol{\\Omega} \\cdot (\\nabla \\times \\boldsymbol{r}) $$ $\\boldsymbol{\\Omega}$ は定数なので $\\nabla \\times \\boldsymbol{\\Omega} = \\boldsymbol{0}$、また $\\nabla \\times \\boldsymbol{r} = \\boldsymbol{0}$ (問4)。よって両項とも消えて0。"
+            },
+            {
+                id: "10", category: "A", level: "易",
+                question: "$\\boldsymbol{\\Omega}$ を定ベクトルとする。次を求めよ。<br>$$ \\nabla \\times (\\boldsymbol{\\Omega} \\times \\boldsymbol{r}) $$",
+                answer: "$$ 2\\boldsymbol{\\Omega} $$<br>解説:<br>公式 $\\nabla \\times (\\boldsymbol{A} \\times \\boldsymbol{B}) = \\boldsymbol{A}(\\nabla \\cdot \\boldsymbol{B}) - \\boldsymbol{B}(\\nabla \\cdot \\boldsymbol{A}) + (\\boldsymbol{B} \\cdot \\nabla)\\boldsymbol{A} - (\\boldsymbol{A} \\cdot \\nabla)\\boldsymbol{B}$ を用いる。$\\boldsymbol{\\Omega}$ の微分はすべて0なので残るのは、$$ \\boldsymbol{\\Omega}(\\nabla \\cdot \\boldsymbol{r}) - (\\boldsymbol{\\Omega} \\cdot \\nabla)\\boldsymbol{r} = 3\\boldsymbol{\\Omega} - \\boldsymbol{\\Omega} = 2\\boldsymbol{\\Omega} $$"
+            },
+            {
+                id: "11", category: "B", level: "易",
+                question: `次を求めよ。<br>$$ \\boldsymbol{a} \\cdot \\boldsymbol{b} $$`,
+                answer: "$$ 1 $$<br>解説:<br>$$ \\boldsymbol{a} \\cdot \\boldsymbol{b} = 1 \\cdot 2 + 2 \\cdot (-1) + 1 \\cdot 1 = 2 - 2 + 1 = 1 $$"
+            },
+            {
+                id: "12", category: "B", level: "易",
+                question: `$\\boldsymbol{a}$ と $\\boldsymbol{b}$ のなす角の $\\cos\\theta$ を求めよ。`,
+                answer: "$$ \\frac{1}{6} $$<br>解説:<br>$$ \\cos\\theta = \\frac{\\boldsymbol{a} \\cdot \\boldsymbol{b}}{|\\boldsymbol{a}||\\boldsymbol{b}|} $$ $|\\boldsymbol{a}| = \\sqrt{1+4+1} = \\sqrt{6}$, $|\\boldsymbol{b}| = \\sqrt{4+1+1} = \\sqrt{6}$。よって $\\cos\\theta = 1 / (\\sqrt{6} \\cdot \\sqrt{6}) = 1/6$。"
+            },
+            {
+                id: "13", category: "B", level: "易",
+                question: `次を求めよ。<br>$$ \\boldsymbol{a} \\times \\boldsymbol{c} $$`,
+                answer: "$$ (3, -3, 3) $$<br>解説:<br>$\\boldsymbol{a} \\times \\boldsymbol{c}$ は行列式で計算する。$\\boldsymbol{i}$ 成分 $2\\cdot 2 - 1\\cdot 1 = 3$、$\\boldsymbol{j}$ 成分 $-(1\\cdot 2 - 1\\cdot (-1)) = -3$、$\\boldsymbol{k}$ 成分 $1\\cdot 1 - 2\\cdot (-1) = 3$。"
+            },
+            {
+                id: "14", category: "B", level: "易",
+                question: `スカラー三重積を求めよ。<br>$$ \\boldsymbol{a} \\cdot (\\boldsymbol{b} \\times \\boldsymbol{c}) $$`,
+                answer: "$$ -12 $$<br>解説:<br>$\\boldsymbol{a} \\cdot (\\boldsymbol{b} \\times \\boldsymbol{c})$ は3つを並べた行列式 $\\det[\\boldsymbol{a}; \\boldsymbol{b}; \\boldsymbol{c}]$。<br>第1行で展開すると $1(-1\\cdot 2 - 1\\cdot 1) - 2(2\\cdot 2 - 1\\cdot (-1)) + 1(2\\cdot 1 - (-1)(-1)) = 1(-3) - 2(5) + 1(1) = -12$。"
+            },
+            {
+                id: "15", category: "B", level: "易",
+                question: `ベクトル三重積を求めよ。<br>$$ \\boldsymbol{a} \\times (\\boldsymbol{b} \\times \\boldsymbol{c}) $$`,
+                answer: "$$ (7, -4, 1) $$<br>解説:<br>BAC-CAB公式を使う。$$ \\boldsymbol{a} \\times (\\boldsymbol{b} \\times \\boldsymbol{c}) = \\boldsymbol{b}(\\boldsymbol{a} \\cdot \\boldsymbol{c}) - \\boldsymbol{c}(\\boldsymbol{a} \\cdot \\boldsymbol{b}) $$ $\\boldsymbol{a} \\cdot \\boldsymbol{c} = -1 + 2 + 2 = 3$, $\\boldsymbol{a} \\cdot \\boldsymbol{b} = 1$。よって $3\\boldsymbol{b} - 1\\boldsymbol{c} = 3(2,-1,1) - (-1,1,2) = (7,-4,1)$。"
+            },
+            {
+                id: "16", category: "B", level: "易",
+                question: `次を求め、BAC-CAB公式との整合性を確認せよ。<br>$$ (\\boldsymbol{a} \\times \\boldsymbol{b}) \\times \\boldsymbol{c} $$`,
+                answer: "$$ (7, -1, 4) $$<br>解説:<br>$$ (\\boldsymbol{a} \\times \\boldsymbol{b}) \\times \\boldsymbol{c} = \\boldsymbol{b}(\\boldsymbol{a} \\cdot \\boldsymbol{c}) - \\boldsymbol{a}(\\boldsymbol{b} \\cdot \\boldsymbol{c}) $$ $\\boldsymbol{b} \\cdot \\boldsymbol{c} = -2 - 1 + 2 = -1$。よって $3\\boldsymbol{b} - (-1)\\boldsymbol{a} = 3(2,-1,1) + (1,2,1) = (7,-1,4)$。問15と結果が違うのは外積が結合的でないことの表れである。"
+            },
+            {
+                id: "17", category: "C", level: "易",
+                question: "$\\boldsymbol{F} = (y, x, 0)$ とし、原点 $O(0,0,0)$ から点 $A(1,1,0)$ への直線に沿った仕事<br>$$ \\int_C \\boldsymbol{F} \\cdot d\\boldsymbol{r} $$<br>を求めよ。",
+                answer: "$$ 1 $$<br>解説:<br>$\\boldsymbol{F}=(y,x,0)$ は $\\phi=xy$ の勾配(保存場)。仕事は端点の値だけで決まるため、$$ \\phi(1,1,0)-\\phi(0,0,0) = 1-0 = 1 $$ 直接 $(t,t,0)$ で積分しても $\\int_0^1 2t \\, dt = 1$。"
+            },
+            {
+                id: "18", category: "C", level: "易",
+                question: "$\\boldsymbol{F} = (x^2, y^2, 0)$ とし、$O \\to A(1,0,0) \\to B(1,1,0) \\to C(0,1,0)$ を経由して $O$ へ戻る正方形の周上の積分<br>$$ \\oint_C \\boldsymbol{F} \\cdot d\\boldsymbol{r} $$<br>を求めよ。",
+                answer: "$$ 0 $$<br>解説:<br>$\\boldsymbol{F}=(x^2,y^2,0)$ は $\\phi=(x^3+y^3)/3$ の勾配なので保存場。閉曲線一周の積分は必ず0となる。"
+            },
+            {
+                id: "19", category: "C", level: "易",
+                question: "$\\boldsymbol{F} = (x+y, x-y, 0)$ とし、$O(0,0,0)$ から点 $D(1,1,0)$ への直線路で<br>$$ \\int_C \\boldsymbol{F} \\cdot d\\boldsymbol{r} $$<br>を求めよ。",
+                answer: "$$ 1 $$<br>解説:<br>経路を $(t,t,0) \\ (0 \\le t \\le 1)$ とすると $d\\boldsymbol{r}=(1,1,0)dt$。$$ \\boldsymbol{F} \\cdot d\\boldsymbol{r} = (t+t)\\cdot 1 + (t-t)\\cdot 1 = 2t $$ よって積分は $\\int_0^1 2t \\, dt = 1$。"
+            },
+            {
+                id: "20", category: "C", level: "易",
+                question: "$\\boldsymbol{F} = (2x, 2y, 2z)$ が保存場であることを示し、ポテンシャルを求めよ。また $(0,0,0)$ から $(1,1,1)$ への仕事を求めよ。",
+                answer: "ポテンシャル: $$ \\phi=x^2+y^2+z^2 $$ 仕事: $$ 3 $$<br>解説:<br>$$ \\boldsymbol{F}=(2x,2y,2z)=\\nabla(x^2+y^2+z^2) $$ だから保存場で $\\phi=x^2+y^2+z^2$。仕事は $\\phi(1,1,1)-\\phi(0,0,0)=3-0=3$。"
+            },
+            {
+                id: "21", category: "C", level: "易",
+                question: "曲線 $C: \\boldsymbol{r}(t) = (\\cos t, \\sin t, t) \\quad (0 \\le t \\le 2\\pi)$ の曲線長を求めよ。",
+                answer: "$$ 2\\sqrt{2}\\pi $$<br>解説:<br>$$ \\frac{d\\boldsymbol{r}}{dt} = (-\\sin t, \\cos t, 1) $$ 速さ $|d\\boldsymbol{r}/dt| = \\sqrt{\\sin^2 t + \\cos^2 t + 1} = \\sqrt{2}$。曲線長 $L = \\int_0^{2\\pi} \\sqrt{2} \\, dt = 2\\sqrt{2}\\pi$。"
+            },
+            {
+                id: "22", category: "C", level: "易",
+                question: "$\\boldsymbol{F} = (yz, xz, xy)$ について $\\nabla \\times \\boldsymbol{F}$ を計算し、保存場か判定せよ。保存場ならポテンシャルを求めよ。",
+                answer: "$$ \\nabla \\times \\boldsymbol{F} = \\boldsymbol{0} $$ ポテンシャル: $$ \\phi=xyz $$<br>解説:<br>$\\nabla \\times \\boldsymbol{F}$ の各成分は $(x-x, y-y, z-z) = (0,0,0)$。回転ゼロなので保存場。ポテンシャルは $\\partial\\phi/\\partial x=yz$ などから $\\phi=xyz$ と求まる。"
+            },
+            {
+                id: "23", category: "D", level: "易",
+                question: "$f(x,y) = 2xy+y-2$、領域 $R = \\{(x,y) \\mid y \\le x \\le 3, 0 \\le y \\le 3\\}$ で次を求めよ。<br>$$ \\iint_R f(x,y) \\, dxdy $$",
+                answer: "$$ \\frac{63}{4} $$<br>解説:<br>領域は $y \\le x \\le 3$, $0 \\le y \\le 3$ の三角形。まず $x$ で積分する。<br>$$ \\int_y^3 (2xy+y-2) \\, dx = [x^2y+(y-2)x]_y^3 = -y^3-y^2+14y-6 $$ 次に $y$ で積分する。<br>$$ \\int_0^3 (-y^3-y^2+14y-6) \\, dy = \\left[-\\frac{y^4}{4}-\\frac{y^3}{3}+7y^2-6y\\right]_0^3 = \\frac{63}{4} $$"
+            },
+            {
+                id: "24", category: "D", level: "易",
+                question: "領域 $D = \\{(x,y,z) \\mid x \\ge 0, y \\ge 0, z \\ge 0, x+y+z \\le 1\\}$ で次を求めよ。<br>$$ \\iiint_D xyz \\, dxdydz $$",
+                answer: "$$ \\frac{1}{720} $$<br>解説:<br>$z$ について積分すると $\\int_0^{1-x-y} z \\, dz = \\frac{1}{2}(1-x-y)^2$。$y$ の積分は $s=1-x$ とおき展開して積分すると $s^4/12$ となる。これに $x/2$ を掛けて $x(1-x)^4/24$ とし、$x$ について $0$ から $1$ まで積分すると最終的に $1/720$ となる。"
+            },
+            {
+                id: "25", category: "D", level: "易",
+                question: "球 $x^2 + y^2 + z^2 \\le a^2$ の体積を球座標で求めよ。",
+                answer: "$$ V = \\frac{4}{3}\\pi a^3 $$<br>解説:<br>球座標で $dV = r^2 \\sin\\theta \\, dr \\, d\\theta \\, d\\phi$。$$ V = \\int_0^{2\\pi} \\int_0^\\pi \\int_0^a r^2 \\sin\\theta \\, dr \\, d\\theta \\, d\\phi = 2\\pi \\cdot 2 \\cdot \\frac{a^3}{3} = \\frac{4}{3}\\pi a^3 $$"
+            },
+            {
+                id: "26", category: "D", level: "易",
+                question: "極座標を用いて次を求めよ。$(D: x^2+y^2 \\le R^2)$<br>$$ \\iint_D e^{-x^2-y^2} \\, dxdy $$",
+                answer: "$$ \\pi(1 - e^{-R^2}) $$<br>解説:<br>極座標 $x^2+y^2=r^2, dxdy=r \\, dr \\, d\\theta$ に変換する。<br>$$ \\int_0^{2\\pi} d\\theta \\int_0^R e^{-r^2} r \\, dr = 2\\pi \\left[ -\\frac{1}{2}e^{-r^2} \\right]_0^R = \\pi(1 - e^{-R^2}) $$"
+            },
+            {
+                id: "27", category: "E", level: "易",
+                question: "$\\boldsymbol{A} = (yz, xz, xy)$ について次を成分計算で確認せよ。<br>$$ \\nabla \\cdot (\\nabla \\times \\boldsymbol{A}) = 0 $$",
+                answer: "$$ 0 $$<br>解説:<br>$\\nabla \\cdot (\\nabla \\times \\boldsymbol{A})$ は恒等的に0。「回転の発散はゼロ」である。実際 $\\boldsymbol{A}=(yz,xz,xy)$ とすると $\\nabla \\times \\boldsymbol{A}=(x-x,y-y,z-z)=\\boldsymbol{0}$ なので、その発散も当然0。"
+            },
+            {
+                id: "28", category: "E", level: "易",
+                question: "$\\phi(x,y,z) = x^2+y^2+z^2$ について次を成分計算で確認せよ。<br>$$ \\nabla \\times (\\nabla \\phi) = \\boldsymbol{0} $$",
+                answer: "$$ \\boldsymbol{0} $$<br>解説:<br>$\\nabla \\times (\\nabla\\phi)$ は恒等的に $\\boldsymbol{0}$。偏微分の順序交換 ($\\partial^2\\phi/\\partial x\\partial y = \\partial^2\\phi/\\partial y\\partial x$ など) から各成分が打ち消し合う。$\\phi=x^2+y^2+z^2$ でも実際に各成分は0になる。"
+            },
+            {
+                id: "29", category: "E", level: "易",
+                question: "$f(x,y,z) = xyz$ として次を計算せよ。<br>$$ \\nabla(\\nabla \\cdot (f\\boldsymbol{r})) $$",
+                answer: "$$ (6yz, 6xz, 6xy) $$<br>解説:<br>まず $$ \\nabla \\cdot (f\\boldsymbol{r}) = f(\\nabla \\cdot \\boldsymbol{r}) + (\\nabla f) \\cdot \\boldsymbol{r} = 3f + (\\nabla f) \\cdot \\boldsymbol{r} $$ $f=xyz$ では $\\nabla f=(yz,xz,xy)$。$(\\nabla f) \\cdot \\boldsymbol{r} = xyz + xyz + xyz = 3xyz = 3f$。よって $\\nabla \\cdot (f\\boldsymbol{r}) = 3f + 3f = 6xyz$。最後に勾配をとって $\\nabla(6xyz) = 6(yz, xz, xy)$。"
+            },
+            {
+                id: "30", category: "E", level: "易",
+                question: "$\\boldsymbol{A} = (x^2, y^2, z^2)$ について $\\nabla \\times (\\nabla \\times \\boldsymbol{A})$ を求め、次と一致することを確認せよ。<br>$$ \\nabla(\\nabla \\cdot \\boldsymbol{A}) - \\nabla^2 \\boldsymbol{A} $$",
+                answer: "両辺ともに $$ \\boldsymbol{0} $$<br>解説:<br>$\\boldsymbol{A}=(x^2,y^2,z^2)$。$\\nabla \\cdot \\boldsymbol{A}=2x+2y+2z$ なので $\\nabla(\\nabla \\cdot \\boldsymbol{A})=(2,2,2)$。$\\nabla^2 \\boldsymbol{A}=(\\nabla^2 x^2, \\nabla^2 y^2, \\nabla^2 z^2)=(2,2,2)$。差は $\\boldsymbol{0}$。また $\\nabla \\times \\boldsymbol{A}=\\boldsymbol{0}$ なので $\\nabla \\times (\\nabla \\times \\boldsymbol{A})=\\boldsymbol{0}$ で、両辺一致する。"
+            },
+            {
+                id: "S1", category: "F", level: "標準",
+                question: "$\\boldsymbol{r} = x\\boldsymbol{e}_x + y\\boldsymbol{e}_y + z\\boldsymbol{e}_z$ として次を計算せよ。<br>$$ \\begin{gathered} (1) \\ \\nabla (r^n) \\\\ (2) \\ \\nabla \\cdot (\\boldsymbol{r} \\nabla r^{-3}) \\\\ (3) \\ \\nabla^2 \\{ \\nabla \\cdot (\\boldsymbol{r}/r^2) \\} \\end{gathered} $$",
+                answer: "$$ \\begin{gathered} (1) \\ n r^{n-2}\\boldsymbol{r} \\\\ (2) \\ \\frac{3}{r^4} \\\\ (3) \\ \\frac{2}{r^4} \\end{gathered} $$<br>解説:<br>(1) 基本公式。 <br>(2) まず $\\nabla r^{-3} = -3 r^{-5}\\boldsymbol{r}$、先頭の $r$ を掛けて $r \\cdot (-3 r^{-5}\\boldsymbol{r}) = -3 r^{-4}\\boldsymbol{r}$。公式 $\\nabla \\cdot (r^m\\boldsymbol{r}) = (m+3)r^m$ を $m=-4$ で使うと $-3 \\cdot (-4+3)r^{-4} = 3/r^4$。<br>(3) まず $\\nabla \\cdot (\\boldsymbol{r}/r^2) = \\nabla \\cdot (r^{-2}\\boldsymbol{r}) = (-2+3)r^{-2} = r^{-2}$。次に公式 $\\nabla^2(r^k) = k(k+1)r^{k-2}$ に $k=-2$ を入れて $(-2)(-1)r^{-4} = 2/r^4$。"
+            },
+            {
+                id: "S2", category: "F", level: "標準",
+                question: "ベクトル場 $\\boldsymbol{F}_1 = (y + \\sin z)\\boldsymbol{i} + x\\boldsymbol{j} + x \\cos z\\boldsymbol{k}$ について、<br>(1) $\\nabla \\times \\boldsymbol{F}_1 = \\boldsymbol{0}$ を示せ。<br>(2) スカラーポテンシャル $f_1(x,y,z)$ を求めよ。",
+                answer: "(2) $$ f_1 = xy + x \\sin z $$<br>解説:<br>スカラーポテンシャルが存在する条件は回転ゼロ $\\nabla \\times \\boldsymbol{F}_1 = \\boldsymbol{0}$ である。実際に各成分の偏微分を計算するとすべて0になる。<br>ポテンシャルは $\\partial f_1/\\partial x = y+\\sin z$ を $x$ で積分して $f_1 = xy+x\\sin z+g(y,z)$。これを $y, z$ で微分して残りの成分と比べると $g$ は定数。"
+            },
+            {
+                id: "S3", category: "F", level: "標準",
+                question: "ベクトル場 $\\boldsymbol{F}_2 = 2x^2y \\boldsymbol{i} + (3yz^2 - 2xy^2)\\boldsymbol{j} - z^3\\boldsymbol{k}$ について、<br>(1) $\\nabla \\cdot \\boldsymbol{F}_2 = 0$ を示せ。<br>(2) ベクトルポテンシャルを一つ求めよ。",
+                answer: "(2) $$ \\boldsymbol{A} = (yz^3 - 2xy^2z)\\boldsymbol{i} - 2x^2yz \\boldsymbol{j} \\quad (\\text{一例}) $$<br>解説:<br>ベクトルポテンシャルが存在する条件は発散ゼロ $\\nabla \\cdot \\boldsymbol{F}_2 = 0$。実際に偏微分を足し合わせると0になる。<br>ベクトルポテンシャルは一意でないが、$A_z=0$ と置いて構成すると一つの解が得られる。これを $\\nabla \\times \\boldsymbol{A}$ して $\\boldsymbol{F}_2$ に戻ることを確認できる。"
+            },
+            {
+                id: "S4", category: "F", level: "標準",
+                question: "曲面 $S: x+y+z=1 \\ (x\\ge0, y\\ge0, z\\ge0)$ について、<br>(1) 面素ベクトル $d\\boldsymbol{S}$ を求めよ。<br>(2) $F=xy+z^2$ に対し $\\iint_S F \\, dS$ を求めよ。<br>(3) $\\boldsymbol{A}=z\\boldsymbol{i}+2x\\boldsymbol{j}-y\\boldsymbol{k}$ に対し $\\iint_S \\boldsymbol{A} \\cdot d\\boldsymbol{S}$ を求めよ。",
+                answer: "(1) $$ d\\boldsymbol{S} = (1,1,1)\\,dxdy $$ <br>(2) $$ \\frac{\\sqrt{3}}{8} $$<br>(3) $$ \\frac{1}{3} $$<br>解説:<br>(1) 平面の法線は $\\nabla(x+y+z)=(1,1,1)$、単位法線 $\\boldsymbol{n}=(1,1,1)/\\sqrt{3}$。$z=1-x-y$ と置くと面積要素は $\\sqrt{3}\\,dxdy$ なので、$d\\boldsymbol{S} = \\boldsymbol{n}\\,dS = (1,1,1)\\,dxdy$。<br>(2) $\\iint_{\\text{三角形}} (xy+(1-x-y)^2)\\sqrt{3} \\, dxdy$ を計算し、和は $1/8$。よって $\\sqrt{3}/8$。<br>(3) $\\boldsymbol{A} \\cdot \\boldsymbol{n} = (z+2x-y)/\\sqrt{3}$ を用い、三角形上で積分すると $1/3$ となる。"
+            },
+            {
+                id: "S5", category: "F", level: "標準",
+                question: "曲線 $C: \\boldsymbol{r}(t) = (2\\cos t, 2\\sin t, t) \\quad (0 \\le t \\le \\pi)$ について、<br>(1) 線素 $ds$ を求めよ。<br>(2) スカラー場 $F=3x+y$ に対し $\\int_C F \\, ds$ を求めよ。<br>(3) ベクトル場 $\\boldsymbol{A} = x\\boldsymbol{i} - 3y\\boldsymbol{j} - 2z\\boldsymbol{k}$ に対し線積分 $\\int_C \\boldsymbol{A} \\cdot d\\boldsymbol{r}$ を求めよ。",
+                answer: "(1) $$ \\sqrt{5}\\,dt $$<br>(2) $$ 4\\sqrt{5} $$<br>(3) $$ -\\pi^2 $$<br>解説:<br>(1) $\\boldsymbol{r}'(t)=(-2\\sin t, 2\\cos t, 1)$、$|\\boldsymbol{r}'|=\\sqrt{5}$。$ds = \\sqrt{5}\\,dt$。<br>(2) $\\int_0^\\pi (6\\cos t+2\\sin t)\\sqrt{5}\\,dt = \\sqrt{5}[6\\sin t - 2\\cos t]_0^\\pi = 4\\sqrt{5}$。<br>(3) $\\boldsymbol{A} \\cdot d\\boldsymbol{r} = (-4\\sin 2t - 2t)dt$。$\\int_0^\\pi (-4\\sin 2t - 2t)\\,dt = 0 - \\pi^2 = -\\pi^2$。"
+            },
+            {
+                id: "S6", category: "F", level: "標準",
+                question: "力の成分を $P=x^2+yz$, $Q=y^2+xz$, $R=z^2+xy$ とする。物体を $O(0,0,0)$ から $D(1,1,1)$ まで動かす仕事 $$ U = \\int_C (Pdx + Qdy + Rdz) $$ を<br> (1)直線経路 <br> (2)$ O \\rightarrow A(1,0,0) \\rightarrow B(1,1,0) \\rightarrow D $の折れ線経路 <br> でそれぞれ計算せよ。",
+                answer: "どちらの経路でも $$ 2 $$<br>解説:<br>回転を計算すると $\\nabla \\times \\boldsymbol{F} = \\boldsymbol{0}$ なので保存場。ポテンシャルは $\\phi=(x^3+y^3+z^3)/3+xyz$。仕事は経路によらず $\\phi(1,1,1)-\\phi(0,0,0)=2$。<br>直線ODでは $(t,t,t)$ で積分し $\\int_0^1 6t^2 \\, dt = 2$。折れ線でも $1/3+1/3+4/3=2$。両経路とも一致する。"
+            },
+            {
+                id: "S7", category: "F", level: "標準",
+                question: "球面 $S: x^2+y^2+z^2=a^2$ について、ベクトル場 $\\boldsymbol{F} = x^3\\boldsymbol{e}_x + y^3\\boldsymbol{e}_y + z^3\\boldsymbol{e}_z$ に対し、ガウスの定理を用いて次を求めよ。<br>$$ \\iint_S \\boldsymbol{F} \\cdot d\\boldsymbol{S} $$",
+                answer: "$$ \\frac{12\\pi a^5}{5} $$<br>解説:<br>ガウスの定理で体積分に直す。$\\nabla \\cdot \\boldsymbol{F} = 3x^2+3y^2+3z^2=3r^2$。$$ \\iiint_V 3r^2 \\, dV = 3 \\int_0^{2\\pi}d\\phi \\int_0^\\pi \\sin\\theta \\, d\\theta \\int_0^a r^4 \\, dr = \\frac{12\\pi a^5}{5} $$"
+            },
+            {
+                id: "S8", category: "F", level: "標準",
+                question: "$xy$ 平面上の円 $x^2+y^2=4$ に沿って、場 $\\boldsymbol{G} = (x^2+y)\\boldsymbol{e}_x + (x^2+2z)\\boldsymbol{e}_y + 2y\\boldsymbol{e}_z$ の線積分をストークスの定理で求めよ。",
+                answer: "$$ -4\\pi $$<br>解説:<br>ストークスの定理で $xy$ 平面の円板上に直す。法線は $\\boldsymbol{e}_z$ なので $(\\nabla \\times \\boldsymbol{G})_z = \\partial G_y/\\partial x - \\partial G_x/\\partial y = 2x - 1$ が効く。$$ \\iint_{\\text{円板}} (2x-1) \\, dS $$ を計算する。$2x$ は対称性から0、残りは $-\\iint dS = -(\\pi \\cdot 2^2) = -4\\pi$。"
+            },
+            {
+                id: "S9", category: "F", level: "標準",
+                question: "2次元極座標 $(r, \\theta)$ について、<br>(1) 基本ベクトル $\\boldsymbol{e}_r, \\boldsymbol{e}_\\theta$ を $\\boldsymbol{e}_x, \\boldsymbol{e}_y$ で表せ。<br>(2) $d\\boldsymbol{e}_r/dt, d\\boldsymbol{e}_\\theta/dt$ を求めよ。<br>(3) 速度 $\\boldsymbol{v}$ と加速度 $\\boldsymbol{a}$ を表せ。",
+                answer: "(1) $$ \\boldsymbol{e}_r = \\cos\\theta \\boldsymbol{e}_x + \\sin\\theta \\boldsymbol{e}_y, \\quad \\boldsymbol{e}_\\theta = -\\sin\\theta \\boldsymbol{e}_x + \\cos\\theta \\boldsymbol{e}_y $$<br>(2) $$ \\frac{d\\boldsymbol{e}_r}{dt} = \\dot{\\theta}\\boldsymbol{e}_\\theta, \\quad \\frac{d\\boldsymbol{e}_\\theta}{dt} = -\\dot{\\theta}\\boldsymbol{e}_r $$<br>(3) $$ \\begin{gathered} \\boldsymbol{v} = \\dot{r}\\boldsymbol{e}_r + r\\dot{\\theta}\\boldsymbol{e}_\\theta \\\\ \\boldsymbol{a} = (\\ddot{r} - r\\dot{\\theta}^2)\\boldsymbol{e}_r + (r\\ddot{\\theta} + 2\\dot{r}\\dot{\\theta})\\boldsymbol{e}_\\theta \\end{gathered} $$<br>解説:<br>(3) $\\boldsymbol{r} = r\\boldsymbol{e}_r$ を時間微分して $\\boldsymbol{v}$ を、もう一度微分して $\\boldsymbol{a}$ を得る。$r\\ddot{\\theta} + 2\\dot{r}\\dot{\\theta}$ がコリオリ項を含む。"
+            },
+            {
+                id: "S10", category: "F", level: "標準",
+                question: "円柱座標 $(\\rho, \\phi, z)$ で、スケール因子 $h_\\rho=1, h_\\phi=\\rho, h_z=1$ を用いて次を表せ。<br>$$ \\nabla f, \\quad \\nabla \\cdot \\boldsymbol{A}, \\quad \\nabla \\times \\boldsymbol{A}, \\quad \\nabla^2 f $$",
+                answer: "$$ \\begin{gathered} \\nabla f = \\frac{\\partial f}{\\partial \\rho}\\boldsymbol{e}_\\rho + \\frac{1}{\\rho}\\frac{\\partial f}{\\partial \\phi}\\boldsymbol{e}_\\phi + \\frac{\\partial f}{\\partial z}\\boldsymbol{e}_z \\\\ \\nabla \\cdot \\boldsymbol{A} = \\frac{1}{\\rho}\\frac{\\partial}{\\partial \\rho}(\\rho A_\\rho) + \\frac{1}{\\rho}\\frac{\\partial A_\\phi}{\\partial \\phi} + \\frac{\\partial A_z}{\\partial z} \\\\ \\nabla \\times \\boldsymbol{A} = \\left(\\frac{1}{\\rho}\\frac{\\partial A_z}{\\partial \\phi} - \\frac{\\partial A_\\phi}{\\partial z}\\right)\\boldsymbol{e}_\\rho + \\left(\\frac{\\partial A_\\rho}{\\partial z} - \\frac{\\partial A_z}{\\partial \\rho}\\right)\\boldsymbol{e}_\\phi + \\frac{1}{\\rho}\\left(\\frac{\\partial}{\\partial \\rho}(\\rho A_\\phi) - \\frac{\\partial A_\\rho}{\\partial \\phi}\\right)\\boldsymbol{e}_z \\\\ \\nabla^2 f = \\frac{1}{\\rho}\\frac{\\partial}{\\partial \\rho}\\left(\\rho \\frac{\\partial f}{\\partial \\rho}\\right) + \\frac{1}{\\rho^2}\\frac{\\partial^2 f}{\\partial \\phi^2} + \\frac{\\partial^2 f}{\\partial z^2} \\end{gathered} $$<br>解説:<br>一般直交曲線座標の公式に $h_\\rho=1, h_\\phi=\\rho, h_z=1$ を代入する。"
+            },
+            {
+                id: "S11", category: "F", level: "標準",
+                question: "$\\boldsymbol{F} = x\\boldsymbol{e}_x + 2(x+z)\\boldsymbol{e}_y + y\\boldsymbol{e}_z$、$C$ が $O$ から $(1,2,2)$ への線分のとき、次を求めよ。<br>$$ (1) \\ \\int_C \\boldsymbol{F} \\cdot d\\boldsymbol{r} \\quad (2) \\ \\int_C \\boldsymbol{F} \\times d\\boldsymbol{r} $$",
+                answer: "(1) $$ \\frac{17}{2} $$ <br>(2) $$ 4\\boldsymbol{e}_x - 2\\boldsymbol{e}_z $$<br>解説:<br>経路を $\\boldsymbol{r}(t)=(t,2t,2t) \\ (0 \\le t \\le 1)$ とすると $d\\boldsymbol{r}=(1,2,2)dt$。<br>(1) $\\boldsymbol{F} \\cdot d\\boldsymbol{r} = 17t \\, dt$。積分して $17/2$。<br>(2) $\\boldsymbol{F} \\times \\frac{d\\boldsymbol{r}}{dt} = (8t, 0, -4t)$。各成分を積分して $(4, 0, -2)$。すなわち $4\\boldsymbol{e}_x - 2\\boldsymbol{e}_z$。"
+            },
+            {
+                id: "S12", category: "F", level: "標準",
+                question: "グリーンの定理を用いて、領域 $D: a^2 \\le x^2+y^2 \\le b^2$ の境界 $\\partial D$ 上の線積分を重積分に直して計算せよ。<br>$$ W = \\oint_{\\partial D} (x^2+y^2)dx + 3xy^2dy $$",
+                answer: "$$ \\frac{3\\pi}{4}(b^4 - a^4) $$<br>解説:<br>グリーンの定理で重積分へ。$P=x^2+y^2, Q=3xy^2$ より $\\partial Q/\\partial x - \\partial P/\\partial y = 3y^2 - 2y$。<br>$$ \\iint 3y^2 \\, dxdy = 3 \\int_0^{2\\pi} \\sin^2\\theta \\, d\\theta \\int_a^b r^3 \\, dr = \\frac{3\\pi}{4}(b^4-a^4) $$ $\\iint 2y \\, dxdy = 0$ (対称性による)。"
+            },
+            {
+                id: "S13", category: "F", level: "標準",
+                question: "$\\boldsymbol{r} = (x,y,z), $ 整数 $n$ について次を体積分 (または面積分) で表せ。<br>$$ \\begin{gathered} (1) \\ \\iint_S r^n (\\boldsymbol{r} \\cdot \\boldsymbol{n}) \\, dS \\\\ (2) \\ \\iint_S (\\boldsymbol{r} \\times \\boldsymbol{n}) \\, dS \\\\ (3) \\ \\iint_S r^n \\boldsymbol{n} \\, dS \\end{gathered} $$",
+                answer: "$$ \\begin{gathered} (1) \\ \\iiint_V (n+3)r^n \\, dV \\\\ (2) \\ \\boldsymbol{0} \\\\ (3) \\ \\iiint_V n r^{n-2}\\boldsymbol{r} \\, dV \\end{gathered} $$<br>解説:<br>(1) ガウスの定理で $\\iiint_V \\nabla \\cdot (r^n\\boldsymbol{r}) \\, dV$。<br>(2) 公式 $\\iint_S (\\boldsymbol{n} \\times \\boldsymbol{F}) \\, dS = \\iiint_V \\nabla \\times \\boldsymbol{F} \\, dV$ を使い、$\\nabla \\times \\boldsymbol{r} = \\boldsymbol{0}$ より $\\boldsymbol{0}$。<br>(3) 勾配定理 $\\iint_S \\phi\\boldsymbol{n} \\, dS = \\iiint_V \\nabla\\phi \\, dV$ に $\\phi=r^n$ を入れる。"
+            },
+            {
+                id: "S14", category: "F", level: "標準",
+                question: "$\\nabla \\times \\boldsymbol{F} = \\nabla \\times \\boldsymbol{G} = \\boldsymbol{0}$, $\\nabla \\cdot \\boldsymbol{H} = 0$ を満たす場について次を証明せよ。<br>(1) 任意の閉曲面 $S$ で $$ \\iint_S (\\boldsymbol{F} \\times \\boldsymbol{G}) \\cdot d\\boldsymbol{S} = 0 $$ <br>(2) 閉曲面 $\\partial V$ で囲まれた $V$ で $$ \\iiint_V (\\boldsymbol{H} \\cdot \\nabla f)dV = \\iint_{\\partial V} f\\boldsymbol{H} \\cdot d\\boldsymbol{S} $$",
+                answer: "解説:<br>(1) $\\nabla \\cdot (\\boldsymbol{F} \\times \\boldsymbol{G}) = \\boldsymbol{G} \\cdot (\\nabla \\times \\boldsymbol{F}) - \\boldsymbol{F} \\cdot (\\nabla \\times \\boldsymbol{G}) = 0 - 0 = 0$。ガウスの定理から体積分も0となる。<br>(2) $\\nabla \\cdot (f\\boldsymbol{H}) = f(\\nabla \\cdot \\boldsymbol{H}) + \\boldsymbol{H} \\cdot \\nabla f = 0 + \\boldsymbol{H} \\cdot \\nabla f$。両辺を $V$ で積分しガウスの定理を使う。"
+            },
+            {
+                id: "S15", category: "F", level: "標準",
+                question: "長球面座標 $(\\xi, \\eta, \\phi)$ を考える。<br>$(x = a \\sinh\\xi \\sin\\eta \\cos\\phi, y = a \\sinh\\xi \\sin\\eta \\sin\\phi, z = a \\sinh\\xi \\cos\\eta)$<br>(1)直交曲線座標であることを示せ。<br>(2)スケール因子を求めよ。また、$ \\nabla f $ を $ \\boldsymbol{e}_\\xi, \\boldsymbol{e}_\\eta, \\boldsymbol{e}_\\phi $ で表せ。",
+                answer: "解説:<br>(1) 接ベクトル $\\partial\\boldsymbol{r}/\\partial\\xi$, $\\partial\\boldsymbol{r}/\\partial\\eta$, $\\partial\\boldsymbol{r}/\\partial\\phi$ を計算すると互いの内積が0になり、直交曲線座標であることが分かる。<br>(2) スケール因子は $h_\\xi = h_\\eta = a\\sqrt{\\sinh^2\\xi + \\sin^2\\eta}$, $h_\\phi = a\\sinh\\xi\\sin\\eta$。<br>よって $$ \\nabla f = \\frac{1}{h_\\xi}\\frac{\\partial f}{\\partial \\xi}\\boldsymbol{e}_\\xi + \\frac{1}{h_\\eta}\\frac{\\partial f}{\\partial \\eta}\\boldsymbol{e}_\\eta + \\frac{1}{h_\\phi}\\frac{\\partial f}{\\partial \\phi}\\boldsymbol{e}_\\phi $$"
+            },
+            {
+                id: "P1", category: "G", level: "証明",
+                question: "$ \\boldsymbol{A}, \\boldsymbol{B}, \\boldsymbol{C}, \\boldsymbol{D} $ を3次元ベクトルとして, 次の恒等式を成分計算で証明せよ。 <br> $$ (\\boldsymbol{A} \\times \\boldsymbol{B}) \\cdot (\\boldsymbol{C} \\times \\boldsymbol{D}) = (\\boldsymbol{A} \\cdot \\boldsymbol{C})(\\boldsymbol{B} \\cdot \\boldsymbol{D}) - (\\boldsymbol{A} \\cdot \\boldsymbol{D})(\\boldsymbol{B} \\cdot \\boldsymbol{C}) $$",
+                answer: "解説:<br>レビ・チビタ記号で $(\\boldsymbol{A} \\times \\boldsymbol{B})_i = \\epsilon_{ijk}A_j B_k$。すると左辺は $\\epsilon_{ijk}\\epsilon_{ilm}A_j B_k C_l D_m$。<br>$\\epsilon-\\epsilon$ の縮約公式 $\\epsilon_{ijk}\\epsilon_{ilm} = \\delta_{jl}\\delta_{km} - \\delta_{jm}\\delta_{kl}$ を用いると、$$ (A_l C_l)(B_m D_m) - (A_m D_m)(B_l C_l) = (\\boldsymbol{A} \\cdot \\boldsymbol{C})(\\boldsymbol{B} \\cdot \\boldsymbol{D}) - (\\boldsymbol{A} \\cdot \\boldsymbol{D})(\\boldsymbol{B} \\cdot \\boldsymbol{C}) $$ となり証明される。"
+            },
+            {
+                id: "P2", category: "G", level: "証明",
+                question: "ヤコビ恒等式を証明せよ。<br>$$ (\\boldsymbol{A} \\times \\boldsymbol{B}) \\times \\boldsymbol{C} + (\\boldsymbol{B} \\times \\boldsymbol{C}) \\times \\boldsymbol{A} + (\\boldsymbol{C} \\times \\boldsymbol{A}) \\times \\boldsymbol{B} = \\boldsymbol{0} $$",
+                answer: "解説:<br>BAC-CAB公式を3項それぞれに適用する。<br>$$ (\\boldsymbol{A} \\times \\boldsymbol{B}) \\times \\boldsymbol{C} = \\boldsymbol{B}(\\boldsymbol{A} \\cdot \\boldsymbol{C}) - \\boldsymbol{A}(\\boldsymbol{B} \\cdot \\boldsymbol{C}) $$<br>残り2項も循環的に書ける。3つを足すと $\\boldsymbol{B}(\\boldsymbol{A} \\cdot \\boldsymbol{C})$, $\\boldsymbol{A}(\\boldsymbol{B} \\cdot \\boldsymbol{C})$ などがすべて符号違いで対になって打ち消し合い、総和は $\\boldsymbol{0}$ となる。"
+            },
+            {
+                id: "P3", category: "G", level: "証明",
+                question: "グリーンの第2公式を証明せよ。<br>$$ \\iiint_V (\\phi\\nabla^2\\psi - \\psi\\nabla^2\\phi) \\, dV = \\iint_S (\\phi\\nabla\\psi - \\psi\\nabla\\phi) \\cdot \\boldsymbol{n} \\, dS $$",
+                answer: "解説:<br>グリーンの第1公式 $$ \\iiint_V (\\phi\\nabla^2\\psi + \\nabla\\phi \\cdot \\nabla\\psi) \\, dV = \\iint_S \\phi(\\nabla\\psi) \\cdot \\boldsymbol{n} \\, dS $$ を、$\\phi$ と $\\psi$ を入れ替えてもう一度書く。2式を引き算すると共通の $\\nabla\\phi \\cdot \\nabla\\psi$ が消えて題意の式を得る。"
+            },
+            {
+                id: "P4", category: "G", level: "証明",
+                question: "$\\nabla \\times \\boldsymbol{F} = \\nabla \\times \\boldsymbol{G} = \\boldsymbol{0}$ のとき、任意の閉曲面 $S$ で次を証明せよ。<br>$$ \\iint_S (\\boldsymbol{F} \\times \\boldsymbol{G}) \\cdot d\\boldsymbol{S} = 0 $$",
+                answer: "解説:<br>$$ \\nabla \\cdot (\\boldsymbol{F} \\times \\boldsymbol{G}) = \\boldsymbol{G} \\cdot (\\nabla \\times \\boldsymbol{F}) - \\boldsymbol{F} \\cdot (\\nabla \\times \\boldsymbol{G}) = 0 $$ ガウスの発散定理より $$ \\iint_S (\\boldsymbol{F} \\times \\boldsymbol{G}) \\cdot d\\boldsymbol{S} = \\iiint_V \\nabla \\cdot (\\boldsymbol{F} \\times \\boldsymbol{G}) \\, dV = 0 $$"
+            },
+            {
+                id: "P5", category: "G", level: "証明",
+                question: "次の恒等式を証明せよ。<br>$$ (\\boldsymbol{A} \\times \\boldsymbol{B}) \\cdot [(\\boldsymbol{C} \\times \\boldsymbol{A}) \\times (\\boldsymbol{C} \\times \\boldsymbol{B})] = [\\boldsymbol{C} \\cdot (\\boldsymbol{A} \\times \\boldsymbol{B})]^2 $$",
+                answer: "解説:<br>まず $(\\boldsymbol{C} \\times \\boldsymbol{A}) \\times (\\boldsymbol{C} \\times \\boldsymbol{B})$ をBAC-CAB公式で展開する。$\\boldsymbol{X}=\\boldsymbol{C} \\times \\boldsymbol{A}$ とおくと、<br>$$ \\boldsymbol{X} \\times (\\boldsymbol{C} \\times \\boldsymbol{B}) = \\boldsymbol{C}(\\boldsymbol{X} \\cdot \\boldsymbol{B}) - \\boldsymbol{B}(\\boldsymbol{X} \\cdot \\boldsymbol{C}) $$ $\\boldsymbol{X} \\cdot \\boldsymbol{C} = (\\boldsymbol{C} \\times \\boldsymbol{A}) \\cdot \\boldsymbol{C} = 0$、$\\boldsymbol{X} \\cdot \\boldsymbol{B} = (\\boldsymbol{C} \\times \\boldsymbol{A}) \\cdot \\boldsymbol{B} = [\\boldsymbol{A},\\boldsymbol{B},\\boldsymbol{C}]$ (スカラー三重積)。よって $(\\boldsymbol{C} \\times \\boldsymbol{A}) \\times (\\boldsymbol{C} \\times \\boldsymbol{B}) = [\\boldsymbol{A},\\boldsymbol{B},\\boldsymbol{C}]\\boldsymbol{C}$。これと $\\boldsymbol{A} \\times \\boldsymbol{B}$ の内積をとると $(\\boldsymbol{A} \\times \\boldsymbol{B}) \\cdot \\boldsymbol{C} = [\\boldsymbol{A},\\boldsymbol{B},\\boldsymbol{C}]$ なので、全体は $[\\boldsymbol{A},\\boldsymbol{B},\\boldsymbol{C}]^2 = [\\boldsymbol{C} \\cdot (\\boldsymbol{A} \\times \\boldsymbol{B})]^2$ となる。"
+            }
+        ];
+
+        // ==========================================
+        // 3. data_basic.js の内容
+        // ==========================================
+        const basicFormulas = [
+            {
+                category: "1. ベクトルの積",
+                description: "ベクトルの内積・外積・三重積に関する基本公式群。",
+                items: [
+                    { name: "内積", formula: "$$ \\boldsymbol{a} \\cdot \\boldsymbol{b} = a_1 b_1 + a_2 b_2 + a_3 b_3 = |\\boldsymbol{a}||\\boldsymbol{b}|\\cos\\theta $$" },
+                    { name: "外積", formula: "$$\\boldsymbol{a} \\times \\boldsymbol{b} = (a_2 b_3 - a_3 b_2, a_3 b_1 - a_1 b_3, a_1 b_2 - a_2 b_1), \\quad |\\boldsymbol{a} \\times \\boldsymbol{b}| = |\\boldsymbol{a}||\\boldsymbol{b}|\\sin\\theta $$" },
+                    { name: "スカラー三重積 (行列式に等しい) ", formula: "$$ \\boldsymbol{a} \\cdot (\\boldsymbol{b} \\times \\boldsymbol{c}) = \\boldsymbol{b} \\cdot (\\boldsymbol{c} \\times \\boldsymbol{a}) = \\boldsymbol{c} \\cdot (\\boldsymbol{a} \\times \\boldsymbol{b}) $$" },
+                    { name: "ベクトル三重積 (BAC-CAB)", formula: "$$ \\boldsymbol{a} \\times (\\boldsymbol{b} \\times \\boldsymbol{c}) = \\boldsymbol{b}(\\boldsymbol{a} \\cdot \\boldsymbol{c}) - \\boldsymbol{c}(\\boldsymbol{a} \\cdot \\boldsymbol{b}) $$" },
+                    { name: "ラグランジュの恒等式", formula: "$$ (\\boldsymbol{a} \\times \\boldsymbol{b}) \\cdot (\\boldsymbol{c} \\times \\boldsymbol{d}) = (\\boldsymbol{a} \\cdot \\boldsymbol{c})(\\boldsymbol{b} \\cdot \\boldsymbol{d}) - (\\boldsymbol{a} \\cdot \\boldsymbol{d})(\\boldsymbol{b} \\cdot \\boldsymbol{c}) $$" },
+                    { name: "ヤコビの恒等式", formula: "$$ \\boldsymbol{a} \\times (\\boldsymbol{b} \\times \\boldsymbol{c}) + \\boldsymbol{b} \\times (\\boldsymbol{c} \\times \\boldsymbol{a}) + \\boldsymbol{c} \\times (\\boldsymbol{a} \\times \\boldsymbol{b}) = \\boldsymbol{0} $$" },
+                    { name: "ε-δ 恒等式", formula: "$$ \\epsilon_{ijk}\\epsilon_{ilm} = \\delta_{jl}\\delta_{km} - \\delta_{jm}\\delta_{kl} $$" }
+                ]
+            },
+            {
+                category: "2. 位置ベクトルと動径に関する公式",
+                description: "位置ベクトル $ \\boldsymbol{r}=(x,y,z) $、その大きさ $ r=|\\boldsymbol{r}| $、$ f $ は $ r $ のみの関数とする。",
+                items: [
+                    { name: "位置ベクトルの勾配と微分", formula: "$$ \\nabla r = \\frac{\\boldsymbol{r}}{r}, \\quad \\nabla r^n = n r^{n-2}\\boldsymbol{r}, \\quad \\nabla\\left(\\frac{1}{r}\\right) = -\\frac{\\boldsymbol{r}}{r^3} $$" },
+                    { name: "位置ベクトルの発散と回転", formula: "$$ \\nabla \\cdot \\boldsymbol{r} = 3, \\quad \\nabla \\times \\boldsymbol{r} = \\boldsymbol{0} $$" },
+                    { name: "動径関数の発散とラプラシアン", formula: "$$ \\begin{gathered}\\nabla \\cdot (r^n \\boldsymbol{r}) = (n+3)r^n \\\\ \\nabla^2(r^k) = k(k+1)r^{k-2} \\quad (\\text{特に } \\nabla^2(1/r) = 0, \\ r \\neq 0) \\end{gathered} $$" },
+                    { name: "スカラー倍された位置ベクトルの発散", formula: "$$ \\nabla \\cdot (f\\boldsymbol{r}) = 3f + r\\frac{\\partial f}{\\partial r} $$" }
+                ]
+            },
+            {
+                category: "3. ナブラ演算の積公式・恒等式",
+                description: "スカラー場 $ f, g $ およびベクトル場 $ \\boldsymbol{A}, \\boldsymbol{B} $ に対する恒等式。",
+                items: [
+                    { name: "スカラー場の積の勾配", formula: "$$ \\nabla (fg) = f\\nabla g + g\\nabla f $$" },
+                    { name: "スカラー倍されたベクトル場の発散と回転", formula: "$$ \\nabla \\cdot (f\\boldsymbol{A}) = f(\\nabla \\cdot \\boldsymbol{A}) + \\boldsymbol{A} \\cdot \\nabla f, \\quad \\nabla \\times (f\\boldsymbol{A}) = f(\\nabla \\times \\boldsymbol{A}) + (\\nabla f) \\times \\boldsymbol{A} $$" },
+                    { name: "外積場の発散", formula: "$$ \\nabla \\cdot (\\boldsymbol{A} \\times \\boldsymbol{B}) = \\boldsymbol{B} \\cdot (\\nabla \\times \\boldsymbol{A}) - \\boldsymbol{A} \\cdot (\\nabla \\times \\boldsymbol{B}) $$" },
+                    { name: "外積場の回転", formula: "$$ \\nabla \\times (\\boldsymbol{A} \\times \\boldsymbol{B}) = \\boldsymbol{A}(\\nabla \\cdot \\boldsymbol{B}) - \\boldsymbol{B}(\\nabla \\cdot \\boldsymbol{A}) + (\\boldsymbol{B} \\cdot \\nabla)\\boldsymbol{A} - (\\boldsymbol{A} \\cdot \\nabla)\\boldsymbol{B} $$" },
+                    { name: "内積の勾配", formula: "$$ \\nabla (\\boldsymbol{A} \\cdot \\boldsymbol{B}) = (\\boldsymbol{A} \\cdot \\nabla)\\boldsymbol{B} + (\\boldsymbol{B} \\cdot \\nabla)\\boldsymbol{A} + \\boldsymbol{A} \\times (\\nabla \\times \\boldsymbol{B}) + \\boldsymbol{B} \\times (\\nabla \\times \\boldsymbol{A}) $$" },
+                    { name: "2階微分の恒等式", formula: "$$ \\nabla \\times (\\nabla f) = \\boldsymbol{0}, \\quad \\nabla \\cdot (\\nabla \\times \\boldsymbol{A}) = 0, \\quad \\nabla \\times (\\nabla \\times \\boldsymbol{A}) = \\nabla(\\nabla \\cdot \\boldsymbol{A}) - \\nabla^2\\boldsymbol{A} $$" }
+                ]
+            },
+            {
+                category: "4. 積分定理",
+                description: "保存場における線積分の基本定理では経路によらない。",
+                items: [
+                    { name: "ガウスの発散定理", formula: "$$ \\iiint_V (\\nabla \\cdot \\boldsymbol{F}) \\, dV = \\iint_S \\boldsymbol{F} \\cdot \\boldsymbol{n} \\, dS $$" },
+                    { name: "ストークスの定理", formula: "$$ \\iint_S (\\nabla \\times \\boldsymbol{F}) \\cdot \\boldsymbol{n} \\, dS = \\oint_C \\boldsymbol{F} \\cdot d\\boldsymbol{r} $$" },
+                    { name: "グリーンの定理 (平面)", formula: "$$ \\oint_C (P \\, dx + Q \\, dy) = \\iint_R \\left( \\frac{\\partial Q}{\\partial x} - \\frac{\\partial P}{\\partial y} \\right) dA $$" },
+                    { name: "勾配定理と回転の定理", formula: "$$ \\iint_S \\phi \\boldsymbol{n} \\, dS = \\iiint_V \\nabla \\phi \\, dV, \\quad \\iint_S (\\boldsymbol{n} \\times \\boldsymbol{F}) \\, dS = \\iiint_V (\\nabla \\times \\boldsymbol{F}) \\, dV $$" },
+                    { name: "線積分の基本定理", formula: "$$ \\int_C (\\nabla \\phi) \\cdot d\\boldsymbol{r} = \\phi(\\text{終点}) - \\phi(\\text{始点}) \\quad \\text{(保存場では経路によらない)} $$" }
+                ]
+            },
+            {
+                category: "5. グリーンの恒等式",
+                description: "スカラー場 $ \\phi, \\psi $ に対する積分恒等式。",
+                items: [
+                    { name: "第1恒等式", formula: "$$ \\iiint_V (\\phi\\nabla^2\\psi + \\nabla\\phi \\cdot \\nabla\\psi) \\, dV = \\iint_S (\\phi\\nabla\\psi) \\cdot \\boldsymbol{n} \\, dS $$" },
+                    { name: "第2恒等式", formula: "$$ \\iiint_V (\\phi\\nabla^2\\psi - \\psi\\nabla^2\\phi) \\, dV = \\iint_S (\\phi\\nabla\\psi - \\psi\\nabla\\phi) \\cdot \\boldsymbol{n} \\, dS $$" }
+                ]
+            },
+            {
+                category: "6. 曲線座標と運動学",
+                description: "各座標系におけるナブラ演算の表現。",
+                items: [
+                    { name: "平面極座標の速度と加速度", formula: "$$ \\boldsymbol{v} = \\dot{r}\\boldsymbol{e}_r + r\\dot{\\theta}\\boldsymbol{e}_\\theta, \\quad \\boldsymbol{a} = (\\ddot{r} - r\\dot{\\theta}^2)\\boldsymbol{e}_r + (r\\ddot{\\theta} + 2\\dot{r}\\dot{\\theta})\\boldsymbol{e}_\\theta $$" },
+                    { name: "円筒座標系$(h_\\rho = 1, h_\\phi = \\rho, h_z = 1)$", formula: "$$ \\nabla f = \\frac{\\partial f}{\\partial \\rho}\\boldsymbol{e}_\\rho + \\frac{1}{\\rho}\\frac{\\partial f}{\\partial \\phi}\\boldsymbol{e}_\\phi + \\frac{\\partial f}{\\partial z}\\boldsymbol{e}_z, \\quad \\nabla^2 f = \\frac{1}{\\rho}\\frac{\\partial}{\\partial \\rho}\\left(\\rho\\frac{\\partial f}{\\partial \\rho}\\right) + \\frac{1}{\\rho^2}\\frac{\\partial^2 f}{\\partial \\phi^2} + \\frac{\\partial^2 f}{\\partial z^2} $$" },
+                    { name: "一般直交曲線座標系 (スケール因子$h_1, h_2, h_3$)", formula: "$$ \\begin{gathered} \\nabla f = \\sum_i \\frac{1}{h_i}\\frac{\\partial f}{\\partial u_i}\\boldsymbol{e}_i, \\\\ \\nabla \\cdot \\boldsymbol{A} = \\frac{1}{h_1 h_2 h_3} \\left[ \\frac{\\partial}{\\partial u_1}(h_2 h_3 A_1) + \\dots \\right], \\\\ \\nabla^2 f = \\frac{1}{h_1 h_2 h_3} \\sum_i \\frac{\\partial}{\\partial u_i} \\left[ \\frac{h_1 h_2 h_3}{h_i^2} \\frac{\\partial f}{\\partial u_i} \\right] \\\\ \\textbf{スケール因子}: h_i = \\left| \\frac{\\partial f}{\\partial u_i} \\right| \\quad (\\textbf{各座標曲線の接ベクトルの大きさ}) \\end{gathered} $$" }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // 4. app.js の内容 (レンダリングロジック)
+        // ==========================================
+        document.addEventListener("DOMContentLoaded", () => {
+            renderTab('essential');
+        });
+
+        function renderTab(tabName) {
+            const contentDiv = document.getElementById("content");
+            let html = "";
+
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            if (tabName === 'essential') {
+                html += "<h2>必須公式集</h2>";
+                essentialFormulas.forEach(group => {
+                    html += `<h3>${group.category}</h3>`;
+                    group.items.forEach(item => {
+                        html += `<div class="card">
+                                    <strong>${item.name}</strong>
+                                    <div>${item.formula}</div>
+                                 </div>`;
+                    });
+                });
+            } 
+            else if (tabName === 'problems') {
+                html += "<h2>類題集</h2>";
+                
+                const categoryTitles = {
+                    "A": "A. $\\nabla$ による $\\boldsymbol{r}$ 関連量の計算",
+                    "B": "B. 内積・外積・三重積の計算",
+                    "C": "C. 線積分・仕事の計算",
+                    "D": "D. 重積分",
+                    "E": "E. ナブラ恒等式の確認",
+                    "F": "F. 複数ステップの計算・応用",
+                    "G": "G. 論証・恒等式の証明問題"
+                };
+
+                const categoryDescriptions = {
+                    "A": commonText.r,
+                    "B": commonText.vec
+                };
+
+                let currentCategory = "";
+
+                problemSets.forEach(prob => {
+                    if (prob.category !== currentCategory) {
+                        currentCategory = prob.category;
+                        const title = categoryTitles[currentCategory] || currentCategory;
+                        html += `<h3 style="margin-top: 30px; border-bottom: 2px solid #ccc; padding-bottom: 5px;">${title}</h3>`;
+                        
+                        if (categoryDescriptions[currentCategory]) {
+                            html += `<p style="margin: 5px 0 15px; font-size: 0.95em; color: #555; padding-left: 10px; border-left: 3px solid #ccc;">
+                                        ${categoryDescriptions[currentCategory]}
+                                     </p>`;
+                        }
+                    }
+
+                    html += `
+                        <div class="card">
+                            <div class="question">
+                                <strong>問題 ${prob.id} 【${prob.level}】</strong><br>
+                                ${prob.question}
+                            </div>
+                            <button class="toggle-btn" onclick="toggleAnswer('${prob.id}')">解答を表示</button>
+                            <div class="answer" id="ans-${prob.id}" style="display: none;">
+                                <hr>
+                                <strong>解答・解説:</strong><br>
+                                ${prob.answer}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            else if (tabName === 'basic') {
+                html += "<h2>基本公式</h2>";
+                basicFormulas.forEach(group => {
+                    html += `<h3>${group.category}</h3>`;
+                    
+                    if (group.description) {
+                        html += `<p style="margin: 5px 0 15px; font-size: 0.95em; color: #555; padding-left: 10px; border-left: 3px solid #ccc;">
+                                    ${group.description}
+                                 </p>`;
+                    }
+                    
+                    group.items.forEach(item => {
+                        html += `<div class="card">
+                                    <strong>${item.name}</strong>
+                                    <div>${item.formula}</div>
+                                 </div>`;
+                    });
+                });
+            }
+
+            contentDiv.innerHTML = html;
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch((err) => console.error(err.message));
+            }
+        }
+
+        function toggleAnswer(id) {
+            const ansDiv = document.getElementById(`ans-${id}`);
+            const btn = ansDiv.previousElementSibling;
+
+            if (ansDiv.style.display === "none") {
+                ansDiv.style.display = "block";
+                btn.textContent = "解答を隠す";
+                btn.classList.add("open");
+            } else {
+                ansDiv.style.display = "none";
+                btn.textContent = "解答を表示";
+                btn.classList.remove("open");
+            }
+        }
+    </script>
+
+</body>
+</html>
